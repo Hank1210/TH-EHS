@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "public",
   "regions": ["fra1"],
   "functions": {
     "api/telegram.ts": {
