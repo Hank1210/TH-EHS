@@ -3,9 +3,21 @@ import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 
 export default [
+  {
+    ignores: ["node_modules/**", "dist/**", ".dev-dist/**", ".vercel/**", "coverage/**", "src/types/**/*.d.ts"]
+  },
   js.configs.recommended,
   {
-    files: ["src/**/*.ts", "tests/**/*.ts"],
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        console: "readonly",
+        process: "readonly"
+      }
+    }
+  },
+  {
+    files: ["src/**/*.ts", "tests/**/*.ts", "api/**/*.ts"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
