@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "regions": ["fra1"],
+  "functions": {
+    "api/telegram.ts": {
+      "maxDuration": 30
+    },
+    "src/api/telegram.ts": {
+      "maxDuration": 30
+    }
+  }
+}
