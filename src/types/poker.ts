@@ -1,4 +1,18 @@
-export const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"] as const;
+export const RANKS = [
+  "A",
+  "K",
+  "Q",
+  "J",
+  "T",
+  "9",
+  "8",
+  "7",
+  "6",
+  "5",
+  "4",
+  "3",
+  "2",
+] as const;
 export const SUITS = ["s", "h", "d", "c"] as const;
 
 export type Rank = (typeof RANKS)[number];
@@ -6,6 +20,7 @@ export type Suit = (typeof SUITS)[number];
 export type CardCode = `${Rank}${Suit}`;
 export type Stage = "preflop" | "flop" | "turn" | "river";
 export type HandState = "ahead" | "tied" | "behind";
+export type Language = "en" | "de";
 
 export interface VisionResult {
   holeCards: string[];

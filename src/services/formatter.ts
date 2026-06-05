@@ -1,10 +1,15 @@
-import type { CardCode, EvaluationResult } from "../types/poker.js";
+import type {
+  CardCode,
+  EvaluationResult,
+  Language,
+  Stage,
+} from "../types/poker.js";
 
 const SUIT_SYMBOLS: Record<string, string> = {
   s: "♠",
   h: "♥",
   d: "♦",
-  c: "♣"
+  c: "♣",
 };
 
 export function formatCard(card: CardCode): string {
@@ -15,15 +20,41 @@ export function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
-export function formatEvaluation(result: EvaluationResult): string {
-  const board = result.boardCards.length > 0 ? result.boardCards.map(formatCard).join(" ") : "None";
+export function formatEvaluation(
+  result: EvaluationResult,
+  language: Language = "en",
+): string {
+  const board =
+    result.boardCards.length > 0
+      ? result.boardCards.map(formatCard).join(" ")
+      : language === "de"
+        ? "Keine"
+        : "None";
+
+  if (language === "de") {
+    return [
+      "TH-EHS Auswertung",
+      "",
+      `Handkarten: ${result.holeCards.map(formatCard).join(" ")}`,
+      `Board: ${board}`,
+      `Phase: ${formatStage(result.stage, language)}`,
+      "",
+      `HS: ${formatPercent(result.hs)}`,
+      `PPOT: ${formatPercent(result.ppot)}`,
+      `NPOT: ${formatPercent(result.npot)}`,
+      `EHS: ${formatPercent(result.ehs)}`,
+      "",
+      `Einschätzung: ${result.assessment}`,
+      `Empfehlung: ${result.advice}`,
+    ].join("\n");
+  }
 
   return [
     "TH-EHS Evaluation",
     "",
     `Hole Cards: ${result.holeCards.map(formatCard).join(" ")}`,
     `Board: ${board}`,
-    `Stage: ${formatStage(result.stage)}`,
+    `Stage: ${formatStage(result.stage, language)}`,
     "",
     `HS: ${formatPercent(result.hs)}`,
     `PPOT: ${formatPercent(result.ppot)}`,
@@ -31,11 +62,21 @@ export function formatEvaluation(result: EvaluationResult): string {
     `EHS: ${formatPercent(result.ehs)}`,
     "",
     `Assessment: ${result.assessment}`,
-    `Advice: ${result.advice}`
+    `Advice: ${result.advice}`,
   ].join("\n");
 }
 
-function formatStage(stage: string): string {
+function formatStage(stage: Stage, language: Language): string {
+  if (language === "de") {
+    const stages: Record<Stage, string> = {
+      preflop: "Pre-Flop",
+      flop: "Flop",
+      turn: "Turn",
+      river: "River",
+    };
+    return stages[stage];
+  }
+
   if (stage === "preflop") {
     return "Pre-Flop";
   }
