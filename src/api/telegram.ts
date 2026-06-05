@@ -57,6 +57,7 @@ export async function handleTelegramUpdate(
 
   const chatId = message.chat.id;
   const languageCommand = parseLanguageCommand(message.text);
+  const helpLanguage = parseHelpCommand(message.text);
   if (!isAllowedUser(message.from?.id, dependencies.env.allowedUserIds)) {
     await dependencies.telegram.sendMessage(
       chatId,
@@ -70,6 +71,14 @@ export async function handleTelegramUpdate(
     await dependencies.telegram.sendMessage(
       chatId,
       getLanguageChangedMessage(languageCommand),
+    );
+    return;
+  }
+
+  if (helpLanguage) {
+    await dependencies.telegram.sendMessage(
+      chatId,
+      withLanguageOption(getHelpMessage(helpLanguage), helpLanguage),
     );
     return;
   }
@@ -114,6 +123,17 @@ function parseLanguageCommand(text: string | undefined): Language | undefined {
   return undefined;
 }
 
+function parseHelpCommand(text: string | undefined): Language | undefined {
+  const command = text?.trim().toUpperCase();
+  if (command === "HELP") {
+    return "en";
+  }
+  if (command === "HILFE") {
+    return "de";
+  }
+  return undefined;
+}
+
 function getLanguageChangedMessage(language: Language): string {
   if (language === "de") {
     return withLanguageOption(
@@ -139,6 +159,48 @@ function getRetakeMessage(language: Language): string {
     return "Ich konnte nicht alle Karten sicher erkennen. Bitte nimm das Foto erneut auf.";
   }
   return "I could not confidently identify all cards. Please retake the photo.";
+}
+
+function getHelpMessage(language: Language): string {
+  if (language === "de") {
+    return [
+      "TH-EHS Hilfe",
+      "",
+      "Sende ein Foto, auf dem deine Texas-Hold'em-Karten gut sichtbar sind. Der Bot erkennt deine Handkarten und das Board und berechnet danach die Pokerwerte deterministisch.",
+      "",
+      "HS ist die aktuelle Hand Strength: Wie oft deine Hand gegen eine zufällige gegnerische Hand jetzt vorne liegt.",
+      "PPOT ist Positive Potential: Wie oft eine aktuell schwächere Hand sich bis zum Showdown noch verbessern kann.",
+      "NPOT ist Negative Potential: Wie oft eine aktuell stärkere Hand bis zum Showdown noch zurückfallen kann.",
+      "EHS ist Effective Hand Strength: Die Gesamtstärke inklusive Verbesserungschancen und Risiko.",
+      "",
+      "Formel: EHS = HS * (1 - NPOT) + (1 - HS) * PPOT.",
+      "",
+      "Pre-Flop wird per deterministischem Monte Carlo geschätzt. Nach dem Flop werden mögliche Boards exakt durchgerechnet. Auf dem River gibt es keine kommenden Karten mehr, deshalb sind PPOT und NPOT 0 und EHS entspricht HS.",
+      "",
+      "Die Einschätzung und Empfehlung basieren auf dem EHS-Wert: niedrige Werte bedeuten Außenseiter, mittlere Werte spielbar oder Favorit, hohe Werte starker Favorit.",
+      "",
+      "Sende Help für Englisch oder Hilfe für Deutsch.",
+    ].join("\n");
+  }
+
+  return [
+    "TH-EHS Help",
+    "",
+    "Send a photo where your Texas Hold'em cards are clearly visible. The bot recognizes your hole cards and the board, then calculates the poker numbers deterministically.",
+    "",
+    "HS is current Hand Strength: how often your hand is ahead against a random opponent hand right now.",
+    "PPOT is Positive Potential: how often a currently weaker hand can improve by showdown.",
+    "NPOT is Negative Potential: how often a currently stronger hand can fall behind by showdown.",
+    "EHS is Effective Hand Strength: total hand strength including improvement chances and downside risk.",
+    "",
+    "Formula: EHS = HS * (1 - NPOT) + (1 - HS) * PPOT.",
+    "",
+    "Pre-flop uses deterministic Monte Carlo estimation. After the flop, possible boards are enumerated exactly. On the river there are no future cards, so PPOT and NPOT are 0 and EHS equals HS.",
+    "",
+    "The assessment and advice are based on EHS: low values mean underdog, middle values mean playable or favourite, and high values mean strong favourite.",
+    "",
+    "Send Help for English or Hilfe for German.",
+  ].join("\n");
 }
 
 function withLanguageOption(message: string, language: Language): string {

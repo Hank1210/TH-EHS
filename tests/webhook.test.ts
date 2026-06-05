@@ -144,4 +144,58 @@ describe("telegram webhook", () => {
       "English is enabled. Please send a photo containing your poker cards.\n\nLanguage option: send DE for German or EN for English.",
     );
   });
+
+  it("sends English help when the user sends Help", async () => {
+    const deps = dependencies();
+    await handleTelegramUpdate(
+      {
+        message: {
+          chat: { id: 50 },
+          from: { id: 20 },
+          text: "Help",
+        },
+      },
+      deps,
+    );
+
+    expect(deps.telegram.downloadImage).not.toHaveBeenCalled();
+    expect(deps.evaluate).not.toHaveBeenCalled();
+    expect(deps.telegram.sendMessage).toHaveBeenCalledWith(
+      50,
+      expect.stringContaining("TH-EHS Help"),
+    );
+    expect(deps.telegram.sendMessage).toHaveBeenCalledWith(
+      50,
+      expect.stringContaining(
+        "Formula: EHS = HS * (1 - NPOT) + (1 - HS) * PPOT.",
+      ),
+    );
+  });
+
+  it("sends German help when the user sends Hilfe", async () => {
+    const deps = dependencies();
+    await handleTelegramUpdate(
+      {
+        message: {
+          chat: { id: 60 },
+          from: { id: 20 },
+          text: "Hilfe",
+        },
+      },
+      deps,
+    );
+
+    expect(deps.telegram.downloadImage).not.toHaveBeenCalled();
+    expect(deps.evaluate).not.toHaveBeenCalled();
+    expect(deps.telegram.sendMessage).toHaveBeenCalledWith(
+      60,
+      expect.stringContaining("TH-EHS Hilfe"),
+    );
+    expect(deps.telegram.sendMessage).toHaveBeenCalledWith(
+      60,
+      expect.stringContaining(
+        "Formel: EHS = HS * (1 - NPOT) + (1 - HS) * PPOT.",
+      ),
+    );
+  });
 });
