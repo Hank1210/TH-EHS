@@ -3,12 +3,304 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TH-EHS2</title>
+    <title>TH-EHS2 — Poker Hand Evaluator</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0f1117;
+        color: #e8eaf0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3rem 1.5rem;
+      }
+
+      main {
+        width: 100%;
+        max-width: 860px;
+      }
+
+      /* Header */
+      header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      header h1 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: #fff;
+      }
+
+      header h1 span {
+        color: #4ade80;
+      }
+
+      header p {
+        margin-top: 0.75rem;
+        font-size: 1.1rem;
+        color: #9ca3af;
+        max-width: 560px;
+        margin-inline: auto;
+        line-height: 1.6;
+      }
+
+      /* How it works */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+
+      .step {
+        background: #1a1d27;
+        border: 1px solid #2a2d3a;
+        border-radius: 12px;
+        padding: 1.25rem 1rem;
+        text-align: center;
+      }
+
+      .step-num {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .step h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.4rem;
+      }
+
+      .step p {
+        font-size: 0.82rem;
+        color: #6b7280;
+        line-height: 1.5;
+      }
+
+      /* Demo section */
+      .demo-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #4ade80;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .demo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      @media (max-width: 580px) {
+        .demo { grid-template-columns: 1fr; }
+      }
+
+      .demo-card {
+        background: #1a1d27;
+        border: 1px solid #2a2d3a;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .demo-card-header {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #2a2d3a;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .demo-card-header .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4ade80;
+        flex-shrink: 0;
+      }
+
+      .demo-card img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      .demo-card-footer {
+        padding: 0.75rem 1rem;
+        font-size: 0.82rem;
+        color: #6b7280;
+        line-height: 1.5;
+      }
+
+      /* Metrics table */
+      .metrics {
+        background: #1a1d27;
+        border: 1px solid #2a2d3a;
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .metrics h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 1rem;
+      }
+
+      .metrics table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+
+      .metrics th {
+        text-align: left;
+        padding: 0.5rem 0.75rem;
+        color: #6b7280;
+        font-weight: 500;
+        border-bottom: 1px solid #2a2d3a;
+      }
+
+      .metrics td {
+        padding: 0.6rem 0.75rem;
+        border-bottom: 1px solid #1e2130;
+        color: #d1d5db;
+      }
+
+      .metrics tr:last-child td { border-bottom: none; }
+
+      .metrics td:first-child {
+        font-weight: 700;
+        color: #4ade80;
+        font-family: monospace;
+        font-size: 0.95rem;
+      }
+
+      .metrics tr.highlight td {
+        background: #1e2d23;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        font-size: 0.8rem;
+        color: #4b5563;
+      }
+    </style>
   </head>
   <body>
     <main>
-      <h1>TH-EHS2</h1>
-      <p>Telegram poker hand evaluator webhook is deployed.</p>
+
+      <header>
+        <h1>TH-EHS2 <span>Poker Evaluator</span></h1>
+        <p>
+          Send a photo of your Texas Hold'em hand to the Telegram bot and get
+          instant equity metrics — HS, EHS, PPot, NPot — plus a plain-language
+          assessment of your position.
+        </p>
+      </header>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">📸</div>
+          <h3>Send a photo</h3>
+          <p>Take a picture of your hole cards and the board and send it to the bot.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">🃏</div>
+          <h3>Card recognition</h3>
+          <p>GPT-4 Vision reads every card and detects the street (Flop / Turn / River).</p>
+        </div>
+        <div class="step">
+          <div class="step-num">📊</div>
+          <h3>Exact equity</h3>
+          <p>Deterministic TypeScript computes HS, EHS, PPot, and NPot — no AI guesswork.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">💬</div>
+          <h3>Telegram reply</h3>
+          <p>Metrics and an assessment land back in your chat in seconds. EN / DE supported.</p>
+        </div>
+      </div>
+
+      <p class="demo-label">Live example</p>
+
+      <div class="demo">
+        <div class="demo-card">
+          <div class="demo-card-header">
+            <span class="dot"></span> Input — photo sent to bot
+          </div>
+          <img src="input.jpg" alt="Poker table showing hole cards 9♥ A♠ and board A♥ T♠ 4♥ 5♥" />
+          <div class="demo-card-footer">
+            Hole cards <strong>9♥ A♠</strong> · Board <strong>A♥ T♠ 4♥ 5♥</strong> (Turn)
+          </div>
+        </div>
+
+        <div class="demo-card">
+          <div class="demo-card-header">
+            <span class="dot"></span> Output — bot reply
+          </div>
+          <img src="output.jpg" alt="Bot reply showing HS 87.1%, EHS 81.0%, assessment Strong Favourite" />
+          <div class="demo-card-footer">
+            EHS <strong>81.0%</strong> · Assessment: <strong>Strong Favourite</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <h2>What the metrics mean</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Example</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HS</td>
+              <td>87.1%</td>
+              <td>Current win probability against a random opponent hand</td>
+            </tr>
+            <tr>
+              <td>PPot</td>
+              <td>18.2%</td>
+              <td>Chance of improving to a winner on future streets</td>
+            </tr>
+            <tr>
+              <td>NPot</td>
+              <td>9.8%</td>
+              <td>Chance of losing the lead after future cards</td>
+            </tr>
+            <tr class="highlight">
+              <td>EHS</td>
+              <td>81.0%</td>
+              <td>HS adjusted for both positive and negative potential — the complete picture</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <footer>
+        TH-EHS2 · No hands, images, or user data are stored.
+      </footer>
+
     </main>
   </body>
 </html>
