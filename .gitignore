@@ -6,3 +6,11 @@ dist
 .vercel
 coverage
 *.log
+
+# Internal planning docs (kept locally, not tracked)
+PRD.md
+TASKS.md
+IMPLEMENTATION_NOTES.md
+IMPLEMENTATION_PLAN.md
+ARCHITECTURE.md
+PROMPTS.md
